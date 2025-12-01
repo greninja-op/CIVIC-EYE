@@ -36,56 +36,129 @@ Smart City Platform for Infrastructure, Municipal Services, Mobility, Safety & C
 
 ## Tech Stack
 
-- **Frontend**: React.js
-- **Backend**: Node.js + Express
-- **Database**: MongoDB
+- **Frontend**: React.js + Tailwind CSS
+- **Core Backend**: PHP (Laravel) - Handles Users, Tickets, Bills
+- **Real-Time Service**: Node.js - WebSocket for live updates
+- **AI Service**: Python (Flask) - Image analysis & predictions
+- **Database**: MySQL (Single source of truth)
 - **Containerization**: Docker
+
+## Architecture
+
+```
+┌─────────────────┐
+│  React Frontend │ (Port 80)
+│  + Tailwind CSS │
+└────────┬────────┘
+         │
+    ┌────┴────┬──────────┬──────────┐
+    │         │          │          │
+┌───▼───┐ ┌──▼──┐  ┌────▼────┐ ┌──▼──┐
+│Laravel│ │Node │  │  Flask  │ │MySQL│
+│  PHP  │ │ JS  │  │ Python  │ │  DB │
+│ :8000 │ │:3001│  │  :5000  │ │:3306│
+└───────┘ └─────┘  └─────────┘ └─────┘
+```
 
 ## Quick Start
 
 ### Using Docker (Recommended)
 
 ```bash
-# Build and run
+# Build and run all services
 docker-compose up --build
 
 # Access the app
-http://localhost:5000
+Frontend: http://localhost
+Laravel API: http://localhost:8000
+Node.js Real-time: http://localhost:3001
+Flask AI: http://localhost:5000
 ```
 
 ### Manual Setup
 
+**1. Backend (Laravel)**
 ```bash
-# Install backend dependencies
-cd server
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve --port=8000
+```
+
+**2. Real-time Service (Node.js)**
+```bash
+cd realtime
 npm install
+node index.js
+```
 
-# Install frontend dependencies
-cd ../client
+**3. AI Service (Flask)**
+```bash
+cd ai-service
+pip install -r requirements.txt
+python app.py
+```
+
+**4. Frontend (React)**
+```bash
+cd client
 npm install
-
-# Run development servers
-npm run dev
+npm start
 ```
 
-## Environment Variables
+## Database Schema
 
-Create `.env` file in server directory:
+**MySQL Tables:**
+- `users` - User accounts
+- `grievances` - Citizen complaints with AI tags
+- `bills` - Municipal bills
+- `buses` - Live bus tracking data
+- `parking_spots` - Parking availability
+- `sos_alerts` - Emergency alerts
+- `hospitals` - Hospital bed data
 
-```
-MONGODB_URI=mongodb://localhost:27017/civiceye
-PORT=5000
-JWT_SECRET=your_secret_key
-```
+## API Endpoints
+
+### Laravel (Core API)
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/grievances/report` - Report issue
+- `GET /api/grievances/feed` - Get local issues
+- `GET /api/services/bills` - Get bills
+- `POST /api/services/bills/pay` - Pay bill
+
+### Node.js (Real-time)
+- `GET /realtime/buses` - Live bus locations
+- `GET /realtime/parking` - Parking availability
+- WebSocket: `sos_alert` - Emergency broadcasts
+
+### Flask (AI)
+- `POST /ai/analyze-image` - Auto-tag grievance images
+- `POST /ai/predict-traffic` - Traffic predictions
+- `GET /ai/hospital-demand` - Bed demand forecast
 
 ## Project Structure
 
 ```
 civic-eye/
-├── client/          # React frontend
-├── server/          # Node.js backend
+├── client/              # React + Tailwind frontend
+│   ├── src/
+│   ├── Dockerfile
+│   └── nginx.conf
+├── backend/             # Laravel PHP backend
+│   ├── app/
+│   ├── routes/
+│   ├── database/
+│   └── Dockerfile
+├── realtime/            # Node.js WebSocket service
+│   ├── index.js
+│   └── Dockerfile
+├── ai-service/          # Flask Python AI service
+│   ├── app.py
+│   └── Dockerfile
 ├── docker-compose.yml
-├── Dockerfile
 └── README.md
 ```
 

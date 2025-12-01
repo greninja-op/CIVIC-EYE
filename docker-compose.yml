@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: civic-eye-db
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: civic123
+      MONGO_INITDB_DATABASE: civiceye
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - civic-network
+
+  # Backend + Frontend
+  app:
+    build: .
+    container_name: civic-eye-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://admin:civic123@mongodb:27017/civiceye?authSource=admin
+      PORT: 5000
+    depends_on:
+      - mongodb
+    networks:
+      - civic-network
+
+volumes:
+  mongo-data:
+
+networks:
+  civic-network:
+    driver: bridge

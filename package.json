@@ -1,0 +1,16 @@
+{
+  "name": "civic-eye",
+  "version": "1.0.0",
+  "description": "Smart City Platform - Infrastructure, Services, Mobility, Safety & Engagement",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/index.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "start": "node server/index.js"
+  },
+  "keywords": ["smart-city", "civic", "governance"],
+  "author": "",
+  "license": "MIT"
+}
